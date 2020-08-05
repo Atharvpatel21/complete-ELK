@@ -1,0 +1,592 @@
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+PUT /pages
+
+PUT /employee
+GET /_cluster/health
+PUT /
+
+
+POST /bkupgrade-pages/_doc
+{
+  "name":"jaggu",
+  "gender":"male",
+  "age":"30"
+}
+
+GET /_cat/indices?v
+
+GET /pages
+
+POST /pages/_doc/4
+{
+  "name":"gutto",
+  "age":"5"
+}
+POST /pages/_doc
+{
+  "name":"atharv",
+  "age":"5",
+  "gender":"male"
+}
+GET /pages/_search
+
+POST /upgrade-employee/_doc/8
+{
+  "employee-name":"somi",
+  "age":"24",
+}
+
+DELETE /pages/_doc
+
+GET /upgrade-employee
+
+GET /employee/_doc/g2nMhXMB4e48JUxqBQnQ
+
+DELETE /employee/_doc/avi
+
+
+
+
+GET /employee/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+
+PUT /analyzer_test
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "my_custom_analyzer":{
+          "type":"custom",
+          "char_filter":["html_strip"],
+          "tokanizer":"standard",
+          "filter":[	
+            "lowercase","stop", "ascifolding"
+            ]
+        }
+      }
+    }
+  }
+}
+PUT /analyzer_test/_settings
+{
+  "analysis": {
+     "analyzer": {
+        "my_second_analyzer":{
+          "type":"custom",
+          "char_filter":["html_strip"],
+          "tokanizer":"standard",
+          "filter":[
+            "lowercase",
+            
+            "ascifolding"
+            ]
+        }
+      }
+  }
+}
+
+POST /analyzer_test/_close
+POST /analyzer_test/_open
+POST /analyzer_test/_settings
+
+POST /analyzer_test/_doc2
+{
+  "description":"Is that peter's quite , looking good?"
+}
+
+POST /analyzer_test/_update_by_query?conflicts-proceed
+
+GET /analyzer_test/_search
+{
+  "query": {
+     "match": {
+      "description":{
+        "query": "that",
+        "analyzer": "keyword"
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+PUT /analyzer_test
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "danies_stop":{
+          "type":"stop",
+          "stopword":"_danies_"
+        }
+        
+      }, 
+      "char_filter": {},
+      "tokenizer": {}, 
+      "analyzer": {
+        "my_custom_analyzer":{
+          "type":"custom",
+          "char_filter":["html_strip"],
+          "tokanizer":"standard",
+          "filter":[
+            "lowercase",
+            "danies_stop",
+            "ascifolding"
+            ]
+        }
+      }
+    }
+  }
+}
+
+
+
+POST /_analyze
+{
+  
+    "char_filter":["html_strip"]
+  , "text": "I&apos; m in a <em>good</em> mood&nbsp, -&nbsp; and I <strong>love</strong> acai!"
+}
+POST /analyzer_test/_analyze
+{
+  
+    "analyzer": "standard"
+  , "text": "I&apos; m in a <em>good</em> mood&nbsp, -&nbsp; and I <strong>love</strong> acai!"
+}
+
+POST /analyzer_test/_analyze
+{
+  
+    "analyzer": "my_custom_analyzer"
+  , "text": "I&apos; m in a <em>good</em> mood&nbsp, -&nbsp; and I <strong>love</strong> acai!"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PUT /reviews/_doc/2
+{
+  "rating":4.5,
+      "content": "Not bad,  not bead at all!",
+      "product_id":123,
+      "created_at":"2015-10-21",
+      "author":{
+        
+        "first_name":"atharv",
+        "last_name":"patel",
+        "email":"atharv@gmail.com"
+        
+        
+      }
+  }
+
+PUT /bkupgrade-employee/_doc/3
+{
+     
+        
+        "first_name":"sandhaya",
+        "last_name":"patel",
+        "email":"sandhya.patel@gmail.com"
+      
+  }
+  
+  PUT /bkupgrade-employee/_doc/2
+{
+     
+        "first_name":"Jagdeesh",
+        "last_name":"verma",
+        "email":"jagadeesh@dunderdog.se"
+      
+  }
+  
+  GET /bkupgrade-employee
+  
+PUT /bkupgrade-employee/_doc/4
+{
+        
+        "first_name":"amit",
+        "last_name":"patel",
+        "email":"engg.amit@gmail.com"
+      
+  }
+  
+  
+  #2015-07-06T12:01:242
+PUT /bkupgrade-employee/_doc/5
+{
+     
+        
+        "first_name":"sandy",
+        "last_name":"patel",
+        "email":"engg.sandy@gmail.com"
+      
+  }
+GET /reviews/_search
+{
+ "query": {
+    "match_all": {}
+  }
+}
+PUT /reviews_new1
+{
+   "mappings" : {
+      "properties" : {
+        "author" : {
+          "properties" : {
+            "email" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            },
+            "first_name" : {
+              "type" : "text"
+            },
+            "last_name" : {
+              "type" : "text"
+            }
+          }
+        },
+        "content" : {
+          "type" : "text"
+        },
+        "created_at" : {
+          "type" : "date"
+        },
+        "product-id" : {
+          "type" : "keyword"
+        },
+        "product_id" : {
+          "type" : "integer"
+        },
+        "rating" : {
+          "type" : "float"
+        }
+      }
+    }
+  }
+}
+
+
+GET /reviews/_mapping
+
+POST /_reindex
+{
+  "source": {
+    "index": "reviews"
+  },
+  "dest": {
+    "index": "reviews_new"
+  }
+  , "script": {
+    "source": """
+    if(ctx._source.product_id ! = null)
+    {
+      ctx._source.product_id = ctx._source.product_id.tosstring();
+    }
+ """
+  }
+}
+
+GET /reviews_new/_search
+{
+   "query": {
+     "match_all": {}
+  }
+}
+
+
+GET /products/_mapping
+
+
+
+PUT /multi_field_test
+{
+  "mappings": {
+    "properties": {
+      "description":{
+      "type":"text"
+      },
+      "ingredients": {
+        "type": "text"
+        , "fields": {
+          "keyword":{
+            "type":"keyword"
+          }
+        }
+      }
+        
+    }
+  }
+}
+
+
+
+POST /multi_field_test/_doc
+{
+  "description":"To make this noodle,you first need to..! ",
+  "ingredients":["Noodle","cake","Eggs"]
+}
+
+GET /multi_field_test/_search
+{
+   "query": {
+     "match": {
+      "ingredients": "Noodle"
+    }
+  }
+}
+GET /multi_field_test/_search
+{
+   "query": {
+     "term": {
+      "ingredients.keyword": "Noodle"
+    }
+  }
+}
+
+
+PUT /_template/access-logs
+{
+  "index_patterns": ["access-logs-*"], 
+  "settings": {"number_of_shards": 2, 
+  "index.mapping.coerce":false },
+  
+  "mappings": {
+     "properties": {
+      "@timestamp": {
+        "type": "date"
+      },
+      "url.original": {
+        "type": "keyword"
+      },
+      "http.request.referrer":{
+       "type": "keyword"
+      },
+      "http.response.status.code":
+      {
+         "type": "long"
+      }
+    }
+  }
+}
+PUT /access-logs-2020-01-01
+
+GET /access-logs-2020-01-01
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PUT /coercion_test/_doc/1
+{ 
+  "price":7.4
+}
+PUT /coercion_test/_doc/2
+{ 
+  "price":"7.4"
+}
+
+PUT /coercion_test/_doc/3
+{ 
+  "price":"7.4m"
+}
+
+
+GET /coercion_test/_doc/2
+{ 
+  "price":7.4
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GET _cat/shards?v
+
+
+
+POST /_bulk
+{"update":{"_index": "products" ,"_id":201} }
+{"doc": { "price":129 } }
+{"delete"":{"_index": "products" ,"_id":200 } } batch process script
+
+
+
+POST /_analyze
+{
+  "text": "2 guys walk in to a bar, but the third .... ducks :-)"
+  , "char_filter": [],
+  "tokenizer": "standard",
+  "filter": ["lowercase"]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+POST /_bulk
+{ "index":{"_index": "products" ,"_id":200} }
+
+{"name":"Espresso Machine", "price":199, "in_stock":5}
+
+{"create":{"_index": "products" ,"_id":201}}
+
+{"name":"Milk Frother", "price":149, "in_stock":14}
+
+
+POST /_bulk
+{"update":{"_index": "products" ,"_id":201} }
+{"doc": { "price":129 } }
+{"delete"":{"_index": "products" ,"_id":200 } }
+
+
+
+
+
+
+
+
+DELETE /products/_doc/101
+
+
+POST /products/_delete_by_query
+{
+   "query": {
+     "match_all": {}
+   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GET /products/_doc/100
+
+POST /products/_update/100?if_primary_term=1&if_seq_no=10
+{
+  "doc": {
+    "in_stock":123
+  }
+}
+
+
+
+POST /products/_update_by_query
+{
+  "script": {
+    "source": "ctx._source.in_stock--"
+    
+  },
+  "query": {
+     "match_all": {}
+  }
+}
+
+POST /products/_update_by_query
+{
+  "conflicts": "proceed",
+  "script": {
+    "source": "ctx._source.in_stock--"
+    
+  },
+ "query":  {
+    "match_all": {}
+  }
+  
+}
+
+GET /products/_search
+{
+   "query": {
+     "match_all": {}
+   }
+}
+
